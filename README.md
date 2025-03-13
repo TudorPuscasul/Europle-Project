@@ -6,3 +6,6 @@ PHP & MySQL for managing and retrieving country data
 JavaScript, HTML, CSS, and Bootstrap to create a responsive and visually
 engaging user interface. Enhanced user experience with smooth animations
 and intuitive design
+
+
+Php server has to be started before opening index
