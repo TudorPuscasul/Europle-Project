@@ -1,0 +1,209 @@
+body {
+    background-image: url(../images/sky3.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body::after {
+    content: "";
+    background-image: url(../images/blue2.png);
+    background-position: center;
+    opacity: 0.6;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: -1;
+}
+
+#map {
+    height: 650px;
+    max-width: 1000px;
+    margin: 20px auto;
+    display: block;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 70px rgba(255, 255, 255, 0.5);
+    outline: 1px solid white;
+    z-index: 1;
+}
+
+
+#guess {
+    padding: 10px;
+    font-size: 18px;
+    margin-right: 10px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#submit {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#submit:hover {
+    background-color: #45a049;
+    z-index: 1;
+}
+
+#playAgain {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#playAgain:hover {
+    background-color: #45a049;
+    z-index: 1;
+}
+
+#goBackButton {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#goBackButton:hover {
+    background-color: #45a049;
+    z-index: 1;
+}
+
+#guessesTable {
+    margin: 20px auto;
+    border-collapse: collapse;
+    z-index: 1;
+}
+
+#guessesTable th,
+#guessesTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+    color: white;
+    z-index: 1;
+}
+
+#guessesTable th {
+    background-color: #f2f2f2;
+}
+
+.direction-image {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+}
+
+.celebration-image {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+}
+
+#congratulationsMessage {
+    color: white;
+    z-index: 1;
+    font-size: 22px;
+}
+
+#confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: transparent;
+}
+
+
+#warning {
+    text-align: center;
+    color: white;
+    margin-top: 10px;
+    z-index: 1;
+    font-size: 22px;
+}
+
+#game-over-message {
+    text-align: center;
+    color: white;
+    margin-top: 10px;
+    z-index: 1;
+    font-size: 22px;
+}
+
+@keyframes flash {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.game-over {
+    text-align: center;
+    color: white;
+    z-index: 1;
+}
+
+.flash-animation {
+    animation: flash 1s infinite;
+    z-index: 1;
+}
+
+#guessesTable {
+    width: 20%;
+    z-index: 1;
+    font-size: 22px;
+}
+
+#guessesTable th {
+    text-align: center;
+    padding: 8px;
+    z-index: 1;
+}
+
+#guessesTable td {
+    padding: 8px;
+    text-align: center;
+    z-index: 1;
+}
+
+#guessesTable img {
+    display: block;
+    margin: 0 auto;
+    z-index: 1;
+}

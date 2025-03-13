@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Europle</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles/stylequiz.css" />
+</head>
+
+<body>
+    <div id="map"></div>
+    <input type="text" id="guess" placeholder="Guess the country" autocomplete="off">
+    <p id="warning" class="game-over">You have <span id="remainingGuesses"></span> guesses left !</p>
+    <div class="button-container">
+        <button type="button" id="submit">Submit</button>
+        <button type="button" id="playAgain" style="display: none;">Play Again</button>
+    </div>
+    <button type="button" id="goBackButton">Go Back</button>
+    <table id="guessesTable">
+        <thead>
+            <tr>
+
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <p id="congratulationsMessage" style="text-align: center;"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <div id="confetti-container">
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.9.3/tsparticles.confetti.bundle.min.js"></script>
+    </div>
+
+    <script>
+        // Initial map options
+        const mapOptions = {
+            center: [53.0, 12.0],
+            zoom: 4,
+            maxBounds: [
+                [30.0, -20.0],
+                [73.0, 60.0]
+            ],
+            maxZoom: 10,
+            minZoom: 4
+        };
+
+        // Initialize the map
+        const map = L.map('map', mapOptions);
+
+        // Add the base layer
+        const baseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+        let numGuesses = 0;
+        const maxGuesses = 6;
+        let remainingGuesses = maxGuesses - numGuesses;
+        let randomCountry;
+        let layer;
+        let gameFinished = false;
+        const gameOverMessage = document.createElement('p');
+        const warningMessage = document.getElementById('warning');
+        const remainingGuessesElement = document.getElementById('remainingGuesses');
+        remainingGuessesElement.textContent = remainingGuesses;
+
+        function updateButtonDisplay() {
+            if (gameFinished) {
+                submit.style.display = 'none'; // Hide the Submit button
+                playAgain.style.display = 'block'; // Show the Play Again button
+                warningMessage.style.display = 'none'; // Hide the warning message
+            } else {
+                submit.style.display = 'block'; // Show the Submit button
+                playAgain.style.display = 'none'; // Hide the Play Again button
+                warningMessage.style.display = 'block'; // Show the warning message
+            }
+        }
+
+        const goBackButton = document.querySelector('#goBackButton');
+        goBackButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Call the function initially to set the initial button display
+        updateButtonDisplay();
+
+        // Function to get a random country name
+        function getRandomCountryName(callback) {
+            const request = new XMLHttpRequest();
+            request.open('GET', 'server.php?country=random', true);
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    const response = JSON.parse(request.responseText);
+                    if (response) {
+                        callback(response.name);
+                    } else {
+                        console.log('Failed to get a random country name.');
+                    }
+                } else {
+                    console.error('Error:', request.status, request.statusText);
+                }
+            };
+            request.onerror = function() {
+                console.error('Request failed.');
+            };
+            request.send();
+        }
+
+        // Load the GeoJSON data for Europe
+        fetch('countries.geojson')
+            .then(response => response.json())
+            .then(data => {
+                // Define the style for the countries
+                const style = {
+                    fillColor: 'white',
+                    fillOpacity: 1,
+                    color: 'gray',
+                    weight: 1
+                };
+
+                // Create a GeoJSON layer and add it to the map
+                layer = L.geoJSON(data, {
+                    style: style
+                }).addTo(map);
+
+                // Get a random country
+                getRandomCountryName(function(countryName) {
+                    randomCountry = countryName;
+                    console.log('Random country:', randomCountry);
+                });
+
+                // Handle form submission
+                const submitButton = document.querySelector('#submit');
+                const playAgainButton = document.querySelector('#playAgain'); // Get the Play Again button element
+                playAgainButton.addEventListener('click', () => {
+                    location.reload(); // Refresh the page
+                });
+                const guessInput = document.querySelector('#guess');
+                const guessesTable = document.querySelector('#guessesTable tbody');
+                const guessInputContainer = document.querySelector('#guess');
+                const congratsMessage = document.getElementById('congratulationsMessage');
+
+                function formatInput(input) {
+                    const words = input.toLowerCase().split(' ');
+
+                    for (let i = 0; i < words.length; i++) {
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                    }
+
+                    return words.join(' ');
+                }
+
+
+                function handleGuess() {
+                    if (!gameFinished) {
+                        const guess = formatInput(guessInput.value);
+                        console.log('Guess:', guess);
+                        if (guessInput.value !== '') {
+                            numGuesses++;
+                            remainingGuesses = maxGuesses - numGuesses; // Calculate the updated remaining guesses
+                            remainingGuessesElement.textContent = remainingGuesses;
+                        }
+
+                        // Check if the maximum number of guesses has been reached
+                        if (!(guess.toLowerCase() === randomCountry.toLowerCase())) {
+                            if (numGuesses === maxGuesses) {
+                                guessInput.disabled = true;
+                                guessInputContainer.disabled = true;
+                                gameFinished = true;
+                                updateButtonDisplay();
+
+                                gameOverMessage.textContent = `Game over. Maximum number of guesses reached. The correct country was ${randomCountry}.`;
+                                gameOverMessage.id = 'game-over-message';
+                                guessesTable.parentElement.insertAdjacentElement('afterend', gameOverMessage);
+                                warningMessage.classList.add('flash-animation');
+                            }
+                            updateButtonDisplay();
+                        }
+
+                        // Calculate the distance between the guess and the random country
+                        calculateDistance(guess, randomCountry, function(distance, directionImage) {
+                            // Clear the input value
+                            guessInput.value = '';
+
+                            addGuessToTable(guessesTable, guess, distance, directionImage);
+                        });
+                    } else {
+                        // Cannot guess again after winning
+                        guessInput.disabled = true;
+                        guessInputContainer.disabled = true;
+                        updateButtonDisplay();
+                    }
+                }
+
+                // Submit button click event listener
+                submitButton.addEventListener('click', handleGuess);
+
+                // Form submission on Enter key press event listener
+                guessInput.addEventListener('keydown', (event) => {
+                    if (event.keyCode === 13) {
+                        event.preventDefault();
+                        handleGuess();
+                    }
+                });
+
+            });
+
+        function addGuessToTable(table, guess, distance, directionImage) {
+            const row = document.createElement('tr');
+
+            const guessCell = document.createElement('td');
+            guessCell.textContent = guess;
+            row.appendChild(guessCell);
+
+            const distanceCell = document.createElement('td');
+            distanceCell.textContent = parseInt(distance) + " km"; // Round the distance to the nearest integer
+            row.appendChild(distanceCell);
+
+            const directionCell = document.createElement('td');
+            directionCell.appendChild(directionImage);
+            row.appendChild(directionCell);
+
+            table.insertBefore(row, table.firstChild);
+
+            if (distance < 10) {
+                const congratsMessage = document.getElementById('congratulationsMessage');
+                const numGuesses = table.getElementsByTagName('tr').length;
+                if (numGuesses == 1) {
+                    congratsMessage.textContent = `Congratulations, you have guessed correctly in ${numGuesses} try!`;
+                    gameFinished = true;
+                } else {
+                    congratsMessage.textContent = `Congratulations, you have guessed correctly in ${numGuesses} tries!`;
+                    gameFinished = true;
+                }
+            }
+        }
+
+        function triggerConfetti() {
+            const count = 200;
+            const defaults = {
+                origin: {
+                    y: 0.7
+                },
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(
+                    Object.assign({}, defaults, opts, {
+                        particleCount: Math.floor(count * particleRatio),
+                    })
+                );
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+            });
+
+            fire(0.2, {
+                spread: 60,
+            });
+
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 1.5,
+            });
+
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.5,
+            });
+
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
+
+        // Function to update the style of the GeoJSON layer based on the distance
+        function updateLayerStyle(distance, guess) {
+            layer.eachLayer(function(layer) {
+                const style = {
+                    fillColor: 'white',
+                    fillOpacity: 1,
+                    color: 'gray',
+                    weight: 1
+                };
+
+                if (layer.feature.properties.NAME === guess) {
+                    if (distance < 10) {
+                        style.fillColor = 'green';
+                        triggerConfetti(); // Correct country
+                    } else if (distance < 500) {
+                        style.fillColor = '#800020'; // Bordering country
+                    } else if (distance < 1000) {
+                        style.fillColor = 'red'; // Close country
+                    } else if (distance < 1500) {
+                        style.fillColor = 'orange'; // Slightly closer
+                    } else if (distance < 2000) {
+                        style.fillColor = 'yellow'; // Further away
+                    } else if (distance < 2500) {
+                        style.fillColor = 'beige'; // Far
+                    } else if (distance < 10000) {
+                        style.fillColor = 'black'; // Very far
+                    }
+                } else if (layer.feature.properties.NAME !== randomCountry) {
+                    // Skip updating the style for previously guessed countries
+                    return;
+                }
+
+                layer.setStyle(style);
+            });
+        }
+
+
+        // Function to make an AJAX request to get the coordinates of a country
+        function getCountryCoordinates(country, callback) {
+            const request = new XMLHttpRequest();
+            request.open('GET', 'server.php?country=' + country, true);
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    const response = JSON.parse(request.responseText);
+                    if (response) {
+                        callback(response);
+                    } else {
+                        console.log('Country not found in the database.');
+                    }
+                } else {
+                    console.error('Error:', request.status, request.statusText);
+                }
+            };
+            request.onerror = function() {
+                console.error('Request failed.');
+            };
+            request.send();
+        }
+
+        function haversineDistance(coord1, coord2) {
+            const earthRadius = 6371; // Radius of the Earth in kilometers
+
+            const lat1 = toRadians(coord1.latitude);
+            const lon1 = toRadians(coord1.longitude);
+            const lat2 = toRadians(coord2.latitude);
+            const lon2 = toRadians(coord2.longitude);
+
+            const dLat = lat2 - lat1;
+            const dLon = lon2 - lon1;
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            const distance = earthRadius * c;
+            return distance;
+        }
+
+        // Helper function to convert degrees to radians
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function calculateDistance(guess, randomCountry, callback) {
+            // Make an AJAX request to get the coordinates for the guess
+            getCountryCoordinates(guess, function(guessCoordinates) {
+                console.log('Guess Coordinates:', guessCoordinates);
+
+                // Make a separate AJAX request to get the coordinates of the random country
+                getCountryCoordinates(randomCountry, function(randomCoordinates) {
+                    console.log('Random Coordinates:', randomCoordinates);
+
+                    // Calculate the distance using the Haversine formula
+                    const distance = haversineDistance(guessCoordinates, randomCoordinates);
+                    console.log('Distance:', distance);
+
+                    // Calculate the direction image based on the coordinates
+                    const directionImage = calculateDirectionImage(guessCoordinates, randomCoordinates, guess === randomCountry);
+
+                    // Update the style of the GeoJSON layer based on the distance
+                    updateLayerStyle(distance, guess);
+
+                    // Invoke the callback function with the distance and direction image
+                    callback(distance, directionImage);
+
+                    updateButtonDisplay();
+                });
+            });
+        }
+
+        function calculateDirectionImage(coord1, coord2, isCorrectGuess) {
+            if (isCorrectGuess) {
+                const celebrationImage = document.createElement('img');
+                celebrationImage.classList.add('celebration-image');
+                celebrationImage.src = 'images/celebration.png';
+                return celebrationImage;
+            } else {
+                const latDiff = coord2.latitude - coord1.latitude;
+                const lonDiff = coord2.longitude - coord1.longitude;
+
+                // Calculate the angle in radians
+                const angle = Math.atan2(lonDiff, latDiff);
+
+                // Convert the angle to degrees
+                let degrees = (angle * 180) / Math.PI;
+
+                // Adjust the angle based on the arrow image's orientation
+                degrees -= 90;
+
+                const directionImage = document.createElement('img');
+                directionImage.classList.add('direction-image');
+                directionImage.src = 'images/arrow2.png';
+                directionImage.style.transform = `rotate(${degrees}deg)`;
+                return directionImage;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

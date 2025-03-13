@@ -1,0 +1,302 @@
+body {
+    background-image: url(../images/sky3.jpg);
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body::after {
+    content: "";
+    background-image: url(../images/blue2.png);
+    background-position: center;
+    opacity: 0.6;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: -1;
+}
+
+.top {
+    padding: 10px;
+    text-align: center;
+}
+
+.top .container {
+    position: relative;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.top .container::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 2px;
+    background-color: white;
+}
+
+.top .instructions {
+    justify-content: left;
+    align-items: left;
+    margin-bottom: 5px;
+    margin-right: 210px;
+}
+
+.top .social {
+    justify-content: right;
+    align-items: right;
+    margin-left: 180px;
+}
+
+.top h1 {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.top a {
+    color: white;
+    font-size: 40px;
+    text-decoration: none;
+}
+
+.page {
+    padding: 10px;
+    text-align: center;
+}
+
+.page h2 {
+    font-size: 30px;
+    color: white;
+}
+
+.page p {
+    padding: 10px;
+    color: white;
+    text-align: left;
+    font-size: 20px;
+}
+
+.page p .hotter {
+    color: #800020;
+    font-size: 22px;
+    font-weight: bolder;
+}
+
+.page p .country {
+    color: white;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+
+.icon .col-md-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+}
+
+.icon .col-md-2 .title {
+    margin-bottom: 10px;
+    color: whitesmoke;
+    text-decoration: solid;
+    font-size: 20px;
+}
+
+
+.icon .title img {
+    max-width: 100%;
+    height: inherit;
+    object-fit: contain;
+}
+
+.icon .austria {
+    margin-top: 20px;
+}
+
+.icon img {
+    opacity: 0;
+    animation: fade-in 1s ease-in-out forwards;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.icon .col-md-2:nth-child(1) img {
+    animation-delay: 0s;
+}
+
+.icon .col-md-2:nth-child(2) img {
+    animation-delay: 0.5s;
+}
+
+.icon .col-md-2:nth-child(3) img {
+    animation-delay: 1s;
+}
+
+.icon .col-md-2:nth-child(4) img {
+    animation-delay: 1.5s;
+}
+
+.icon .col-md-2:nth-child(5) img {
+    animation-delay: 2s;
+}
+
+.icon .col-md-2:nth-child(6) img {
+    animation-delay: 2.5s;
+}
+
+.icon .col-md-2 .title {
+    opacity: 0;
+    animation: fade-in 1s ease-in-out forwards;
+}
+
+.icon .col-md-2:nth-child(1) .title {
+    animation-delay: 0s;
+}
+
+.icon .col-md-2:nth-child(2) .title {
+    animation-delay: 0.5s;
+}
+
+.icon .col-md-2:nth-child(3) .title {
+    animation-delay: 1s;
+}
+
+.icon .col-md-2:nth-child(4) .title {
+    animation-delay: 1.5s;
+}
+
+.icon .col-md-2:nth-child(5) .title {
+    animation-delay: 2s;
+}
+
+.icon .col-md-2:nth-child(6) .title {
+    animation-delay: 2.5s;
+}
+
+
+.play {
+    padding: 20px;
+    text-align: center;
+}
+
+.play h2 {
+    font-size: 20px;
+    color: white;
+    text-align: left;
+    font-size: 25px;
+}
+
+.play img {
+    max-width: 200px;
+    height: auto;
+    margin-top: 15px;
+    transition: transform 0.3s ease;
+}
+
+.play img {
+    max-width: 200px;
+    height: auto;
+    margin-top: 15px;
+    transition: transform 0.3s ease;
+}
+
+.play img:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+
+.play p {
+    margin-top: 10px;
+    color: white;
+    font-size: 20px;
+}
+
+.play .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.play img:hover {
+    opacity: 0.8;
+}
+
+.play img {
+    opacity: 0;
+    animation: fade-in 1s ease-in-out forwards;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.play .col-md-12:nth-child(1) img {
+    animation-delay: 3.5s;
+}
+
+.bottom {
+    padding: 10px;
+    text-align: center;
+}
+
+.bottom .container {
+    position: relative;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+
+.bottom .container::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 2px;
+    background-color: white;
+}
+
+.bottom .footer-text {
+    display: flex;
+    margin-left: 30px;
+    margin-top: 10px;
+    color: white;
+    justify-content: left;
+    text-align: left;
+}
+
+.bottom .disclaimer {
+    display: flex;
+    margin-top: 10px;
+    margin-right: 20px;
+    color: #800020;
+    font-weight: bolder;
+    white-space: nowrap;
+    justify-content: right;
+    text-align: right;
+}
